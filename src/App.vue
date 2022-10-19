@@ -27,7 +27,7 @@
   <KeepAlive>
     <component :is="currentView" />
   </KeepAlive>
-  
+
 <!-- TOAST -->
   <div class="toast-container position-fixed top-0 end-0 p-3">
     <div v-for="(toast, index) in toaster.toasts" class="toast show" role="alert" aria-live="assertive" aria-atomic="true" :key="index+'toast'">
@@ -66,7 +66,7 @@ export default {
   },
   data() {
     return {
-      currentView: 'home',
+      currentView: 'HelloWorld',
       toasts: [],
       toaster: {
         toasts: [],
