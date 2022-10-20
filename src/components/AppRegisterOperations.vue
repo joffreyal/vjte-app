@@ -1,5 +1,17 @@
 <template>
-  <div class="container">
+  <div class="container mt-3">
+
+    <h2>OPERATIONS DE CAISSE
+      <button class="btn btn-primary btn-sm round-button" type="button" data-bs-toggle="collapse" data-bs-target="#salesInfo" aria-expanded="false" aria-controls="salesInfo">
+        <i class="bi bi-info-lg"></i>
+      </button>
+    </h2>
+    <div class="collapse" id="salesInfo">
+      <div class="card card-body">
+        WIP : some help
+      </div>
+    </div>
+
     <div class="row">
       <div class="col-auto">
         <input v-model="registerOperationsDate" type="date" class="form-control">

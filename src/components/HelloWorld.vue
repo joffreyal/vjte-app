@@ -1,40 +1,61 @@
 <template>
   <div class="hello">
-    <h1>Bienvenue sur l'application de gestion de la boutique de créateur 'Viens je t'emmène</h1>
+    <h1>Bienvenue</h1>
     <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
+      Il est fortement conseillé de garder un cahier de compte sous la main en cas de bug.
     </p>
-    <h3>Installed CLI Plugins</h3>
+    <div class="container">
+      <h3>Les fonctionnalités</h3>
+      <div class="row m-3">
+        <div class="col-4">
+          <b>Ventes :</b>
+        </div>
+        <div class="col-8">
+          Interface permettant de sauvegarder les ventes effectuées
+        </div>
+      </div>
+      <div class="row m-3">
+        <div class="col-4">
+          <b>Opérations de caisse :</b>
+        </div>
+        <div class="col-8">
+          Permet de récupérer une liste des opérations de caisses pour une date donnée
+        </div>
+      </div>
+      <div class="row m-3">
+        <div class="col-4">
+          <b>Rapport de ventes :</b>
+        </div>
+        <div class="col-8">
+          Permet d'afficher la liste des ventes par créateur sur une période donnée
+        </div>
+      </div>
+    </div>
+
+    <h3>Liens Utiles</h3>
     <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
+      <li><a href="https://docs.google.com/spreadsheets/d/11XmS1Ne_31lKCDSYpWY22u41s4P9qCje7Ebvuk5KU0Q/edit?usp=sharing" target="_blank">Feuille de calcul google</a> (Toutes les données sont récupées et sauvegardées ici)</li>
     </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+    <div class='fixed-bottom'>
+      <p>
+        Version : {{appVersion}}
+      </p>
+    </div>
   </div>
 </template>
 
 <script>
+import { version } from "../../package.json"
+
 export default {
   name: 'HelloWorld',
   props: {
     msg: String
+  },
+  data () {
+    return {
+      appVersion: version
+    }
   }
 }
 </script>
@@ -45,6 +66,10 @@ export default {
     text-align: center;
 }
 
+.row {
+  text-align: left;
+}
+
 h3 {
   margin: 40px 0 0;
 }
@@ -53,7 +78,7 @@ ul {
   padding: 0;
 }
 li {
-  display: inline-block;
+  /* display: inline-block; */
   margin: 0 10px;
 }
 a {

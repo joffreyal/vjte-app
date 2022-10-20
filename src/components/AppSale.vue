@@ -1,124 +1,135 @@
 <template>
-  <div class="container">
-        <div class="row mb-3">
-          <div class="form-group col-auto">
-            <label for="inputDate" >Date</label>
-            <input v-model="date" type="date" class="form-control" id="inputDate">
-          </div>
-          <div class="form-group col-auto">
-            <label for="inputHour" >Heure</label>
-            <div class="input-group">
-              <input v-model="hour" type="time" class="form-control" id="inputHour" :disabled="lockedTime">
-              <span class="input-group-text">
-                <button class='btn btn-primary btn-sm' @click="lockedTime = !lockedTime; updateTime()">
-                  <i class="bi" :class="lockedTime ? 'bi-lock' : 'bi-unlock'"></i>
-                </button>
-              </span>
-            </div>
-          </div>
-        </div>
-        <h3>Produits</h3>
-        <div class="row mb-3" v-for="(sale, saleIndex) in sales" :key="saleIndex+'sale'">
-          <div class="col">
-            <select class="form-select" id="inputCreator" v-model='sale.creator'>
-              <option value="" disabled selected>Créateur</option>
-              <option :value="creator.value" v-for="(creator, creatorId) in creatorList" :key="creatorId+'creator'">{{ creator.label }}</option>
-            </select>
-            <div v-if="!sale.validation.creator" class="text-danger">
-              Veuillez choisir un créateur
-            </div>
-          </div>
-          <div class="col">
-            <label for="inputProduct" class="visually-hidden">Produit</label>
-            <div class="dropdown">
-              <input autocomplete="off" v-model="sale.product" type="text" class="form-control" id="inputProduct" placeholder="Description du produit"
-              @keyup.enter="enter(saleIndex)"
-              @keyup.down="down()"
-              @keyup.up="up()"
-              @input="change(saleIndex)"
-              @focus="updateSuggestions(saleIndex)"
-              >
-              <div v-if="!sale.validation.product" class="text-danger">
-                Veuillez décrir le produit
-              </div>
-              <ul class="dropdown-menu" v-bind:class="{'show':openSuggestion(saleIndex)}">
-                <li v-for="(suggestion, index) in matches(saleIndex)" :key="index+'suggestion'">
-                  <a @click="suggestionClick(index, saleIndex)" class="dropdown-item" v-bind:class="{'active': isActive(index)}" href="#">{{ suggestion }}</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div class="col">
-            <div class="input-group col">
-              <input v-model="sale.price" type="number" step="0.01" class="form-control" id="inputPrice" placeholder="prix">
-              <span class="input-group-text">€</span>
-            </div>
-            <div v-if="!sale.validation.price" class="text-danger">
-              Veuillez définir un prix
-            </div>
-          </div>
-          <div class="col">
-            <button class="btn btn-danger" @click="deleteSaleRow(sale)">X</button>
-          </div>
-        </div>
-        <div class="row mb-3">
-          <div class="input-group col">
-            <button class="btn btn-success" @click="addSaleRow()">Ajouter un produit</button>
-          </div>
-        </div>
-        <div class="row mb-3">
-          <div class="input-group col-sm-6">
-            <span class="input-group-text">TOTAL</span>
-            <input v-model="totalSales" type="number" step="any" class="form-control" placeholder="total" disabled>
-            <span class="input-group-text">€</span>
-          </div>
-        </div>
-        <div class="row">
-          <h3>Paiements</h3>
-        </div>
-        <div class="row mb-3" v-for="(payment, paymentId) in payments" :key="paymentId+'payment'">
-          <div class="col">
-            <select class="form-select" v-model='payment.mode'>
-              <option value="" disabled selected>Moyen de paiement</option>
-              <option :value="paymentOption.value" v-for="(paymentOption, optionId) in paymentOptions" :key="optionId+'option'">{{ paymentOption.label }}</option>
-            </select>
-            <div v-if="!payment.validation.mode" class="text-danger">
-              Veuillez choisir un moyen de paiement
-            </div>
-          </div>
-          <div class="col">
-            <div class="input-group col">
-              <input v-model="payment.amount" class="form-control" type="number" step="0.01" min="0" placeholder="montant">
-              <span class="input-group-text">€</span>
-            </div>
-            <div v-if="!payment.validation.amount" class="text-danger">
-              Veuillez choisir un montant
-            </div>
-          </div>
-          <div class="col">
-            <button class="btn btn-danger" @click="deletePaymentRow(payment)">X</button>
-          </div>
-          <div class="col">
-            <button v-if="payment.mode == 'Espece' & paymentReste < 0" class="btn btn-danger" @click="solveChange(payment)">Rendu monnaie = {{ formatToEuro(-paymentReste) }}</button>
-          </div>
-        </div>
-        <div class="row mb-3">
-          <div class="input-group col">
-            <button class="btn btn-success" @click="addPaymentRow()">Ajouter un payment</button>
-          </div>
-        </div>
-        <div class="row mb-3">
-          <div v-if="totalSales > 0" :class="['alert', paymentReste > 0 ? 'alert-warning' : 'alert-success']">
-            <button class="btn btn-primary" @click="addLeftToLastPayment()"><i class="bi bi-arrow-up-circle"></i> Reste : {{formatToEuro(paymentReste)}} </button>
-          </div>
-        </div>
-        <div class="row mb-3">
-          <button class="btn btn-primary" @click="onSubmit()">
-            <span v-if="sendingSale" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-            {{sendingSale ? '' : 'Valider'}}
-          </button>
+  <div class="container mt-3">
+    <h2>VENTES
+      <button class="btn btn-primary btn-sm round-button" type="button" data-bs-toggle="collapse" data-bs-target="#salesInfo" aria-expanded="false" aria-controls="salesInfo">
+        <i class="bi bi-info-lg"></i>
+      </button>
+    </h2>
+    <div class="collapse" id="salesInfo">
+      <div class="card card-body">
+        WIP : some help
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="form-group col-auto">
+        <label for="inputDate" >Date</label>
+        <input v-model="date" type="date" class="form-control" id="inputDate">
+      </div>
+      <div class="form-group col-auto">
+        <label for="inputHour" >Heure</label>
+        <div class="input-group">
+          <input v-model="hour" type="time" class="form-control" id="inputHour" :disabled="lockedTime">
+          <span class="input-group-text">
+            <button class='btn btn-primary btn-sm' @click="lockedTime = !lockedTime; updateTime()">
+              <i class="bi" :class="lockedTime ? 'bi-lock' : 'bi-unlock'"></i>
+            </button>
+          </span>
         </div>
       </div>
+    </div>
+    <h3>Produits</h3>
+    <div class="row mb-3" v-for="(sale, saleIndex) in sales" :key="saleIndex+'sale'">
+      <div class="col">
+        <select class="form-select" id="inputCreator" v-model='sale.creator'>
+          <option value="" disabled selected>Créateur</option>
+          <option :value="creator.value" v-for="(creator, creatorId) in creatorList" :key="creatorId+'creator'">{{ creator.label }}</option>
+        </select>
+        <div v-if="!sale.validation.creator" class="text-danger">
+          Veuillez choisir un créateur
+        </div>
+      </div>
+      <div class="col">
+        <label for="inputProduct" class="visually-hidden">Produit</label>
+        <div class="dropdown">
+          <input autocomplete="off" v-model="sale.product" type="text" class="form-control" id="inputProduct" placeholder="Description du produit"
+          @keyup.enter="enter(saleIndex)"
+          @keyup.down="down()"
+          @keyup.up="up()"
+          @input="change(saleIndex)"
+          @focus="updateSuggestions(saleIndex)"
+          >
+          <div v-if="!sale.validation.product" class="text-danger">
+            Veuillez décrir le produit
+          </div>
+          <ul class="dropdown-menu" v-bind:class="{'show':openSuggestion(saleIndex)}">
+            <li v-for="(suggestion, index) in matches(saleIndex)" :key="index+'suggestion'">
+              <a @click="suggestionClick(index, saleIndex)" class="dropdown-item" v-bind:class="{'active': isActive(index)}" href="#">{{ suggestion }}</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="col">
+        <div class="input-group col">
+          <input v-model="sale.price" type="number" step="0.01" class="form-control" id="inputPrice" placeholder="prix">
+          <span class="input-group-text">€</span>
+        </div>
+        <div v-if="!sale.validation.price" class="text-danger">
+          Veuillez définir un prix
+        </div>
+      </div>
+      <div class="col">
+        <button class="btn btn-danger" @click="deleteSaleRow(sale)">X</button>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="input-group col">
+        <button class="btn btn-success" @click="addSaleRow()">Ajouter un produit</button>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="input-group col-sm-6">
+        <span class="input-group-text">TOTAL</span>
+        <input v-model="totalSales" type="number" step="any" class="form-control" placeholder="total" disabled>
+        <span class="input-group-text">€</span>
+      </div>
+    </div>
+    <div class="row">
+      <h3>Paiements</h3>
+    </div>
+    <div class="row mb-3" v-for="(payment, paymentId) in payments" :key="paymentId+'payment'">
+      <div class="col">
+        <select class="form-select" v-model='payment.mode'>
+          <option value="" disabled selected>Moyen de paiement</option>
+          <option :value="paymentOption.value" v-for="(paymentOption, optionId) in paymentOptions" :key="optionId+'option'">{{ paymentOption.label }}</option>
+        </select>
+        <div v-if="!payment.validation.mode" class="text-danger">
+          Veuillez choisir un moyen de paiement
+        </div>
+      </div>
+      <div class="col">
+        <div class="input-group col">
+          <input v-model="payment.amount" class="form-control" type="number" step="0.01" min="0" placeholder="montant">
+          <span class="input-group-text">€</span>
+        </div>
+        <div v-if="!payment.validation.amount" class="text-danger">
+          Veuillez choisir un montant
+        </div>
+      </div>
+      <div class="col">
+        <button class="btn btn-danger" @click="deletePaymentRow(payment)">X</button>
+      </div>
+      <div class="col">
+        <button v-if="payment.mode == 'Espece' & paymentReste < 0" class="btn btn-danger" @click="solveChange(payment)">Rendu monnaie = {{ formatToEuro(-paymentReste) }}</button>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="input-group col">
+        <button class="btn btn-success" @click="addPaymentRow()">Ajouter un payment</button>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div v-if="totalSales > 0" :class="['alert', paymentReste > 0 ? 'alert-warning' : 'alert-success']">
+        <button class="btn btn-primary" @click="addLeftToLastPayment()"><i class="bi bi-arrow-up-circle"></i> Reste : {{formatToEuro(paymentReste)}} </button>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <button class="btn btn-primary" @click="onSubmit()">
+        <span v-if="sendingSale" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        {{sendingSale ? '' : 'Valider'}}
+      </button>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -396,4 +407,5 @@ export default {
 </script>
 
 <style>
+
 </style>

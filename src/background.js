@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, protocol, BrowserWindow } from 'electron'
+import { app, protocol, BrowserWindow, shell } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 import { autoUpdater } from "electron-updater"
@@ -36,6 +36,11 @@ async function createWindow() {
     win.loadURL('app://./index.html')
     autoUpdater.checkForUpdatesAndNotify()
   }
+
+  win.webContents.setWindowOpenHandler(({ url }) => {
+    shell.openExternal(url);
+    return { action: 'deny' };
+  });
 }
 
 // Quit when all windows are closed.
