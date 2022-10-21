@@ -1,11 +1,12 @@
 'use strict'
 
-import { app, protocol, BrowserWindow, shell } from 'electron'
+import { app, protocol, BrowserWindow, shell, autoUpdater } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
-import { autoUpdater } from "electron-updater"
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
+const server = "https://hazel-update-vjte.vercel.app/"
+const url = `${server}/update/${process.platform}/${app.getVersion()}`
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -34,7 +35,7 @@ async function createWindow() {
     createProtocol('app')
     // Load the index.html when not in development
     win.loadURL('app://./index.html')
-    autoUpdater.checkForUpdatesAndNotify()
+    autoUpdater.setFeedURL({ url })
   }
 
   win.webContents.setWindowOpenHandler(({ url }) => {

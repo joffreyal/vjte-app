@@ -1,6 +1,6 @@
 {
   "name": "vjte-app",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -17,7 +17,6 @@
     "bootstrap-icons": "^1.9.1",
     "core-js": "^3.8.3",
     "currency.js": "^2.0.4",
-    "electron-updater": "^5.3.0",
     "vue": "^3.2.13"
   },
   "devDependencies": {
