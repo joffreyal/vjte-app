@@ -8,7 +8,7 @@
     </h2>
     <div class="collapse" id="salesInfo">
       <div class="card card-body">
-        WIP : some help
+        WIP
       </div>
     </div>
 

@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import { version } from "../../package.json"
+// import { version } from "../../package.json"
 
 export default {
   name: 'HelloWorld',
@@ -54,7 +54,7 @@ export default {
   },
   data () {
     return {
-      appVersion: version
+      appVersion: this.$params.version
     }
   }
 }

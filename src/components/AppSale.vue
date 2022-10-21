@@ -7,7 +7,7 @@
     </h2>
     <div class="collapse" id="salesInfo">
       <div class="card card-body">
-        WIP : some help
+        Permet d'enregistrer les ventes dans la feuille de calcul google.
       </div>
     </div>
 
