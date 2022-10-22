@@ -38,7 +38,7 @@
     </ul>
     <div class='fixed-bottom'>
       <p>
-        Version : {{appVersion}}
+        Version : {{appVersion}} author : Jaz
       </p>
     </div>
   </div>
