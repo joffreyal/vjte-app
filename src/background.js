@@ -1,12 +1,14 @@
 'use strict'
 
-import { app, protocol, BrowserWindow, shell, autoUpdater } from 'electron'
+import { app, protocol, BrowserWindow, shell } from 'electron'
+import { autoUpdater } from 'electron-updater'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
-const server = "https://hazel-update-vjte.vercel.app/"
-const url = `${server}/update/${process.platform}/${app.getVersion()}`
+// const server = "https://hazel-update-vjte.vercel.app/"
+// const url = `${server}/update/${process.platform}/${app.getVersion()}`
+autoUpdater.logger = require("electron-log")
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -31,14 +33,13 @@ async function createWindow() {
     // Load the url of the dev server if in development mode
     await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
     if (!process.env.IS_TEST) win.webContents.openDevTools()
+    console.log('test')
+    autoUpdater.checkForUpdatesAndNotify()
   } else {
     createProtocol('app')
     // Load the index.html when not in development
     win.loadURL('app://./index.html')
-    autoUpdater.setFeedURL({ url })
-    setInterval(() => {
-      autoUpdater.checkForUpdates()
-    }, 60000)
+    autoUpdater.checkForUpdatesAndNotify()
   }
 
   win.webContents.setWindowOpenHandler(({ url }) => {
@@ -46,6 +47,14 @@ async function createWindow() {
     return { action: 'deny' };
   });
 }
+
+autoUpdater.on('checking-for-update', () => {
+  console.log('checking for update')
+})
+
+autoUpdater.on('error', (error) => {
+  console.log(e)
+})
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
@@ -91,23 +100,3 @@ if (isDevelopment) {
     })
   }
 }
-
-autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
-  const dialogOpts = {
-    type: 'info',
-    buttons: ['Restart', 'Later'],
-    title: 'Application Update',
-    message: process.platform === 'win32' ? releaseNotes : releaseName,
-    detail:
-      'Une nouvelle version a été téléchargée. Redémarrez l\'application pour appliquer la mise à jour.',
-  }
-
-  dialog.showMessageBox(dialogOpts).then((returnValue) => {
-    if (returnValue.response === 0) autoUpdater.quitAndInstall()
-  })
-})
-
-autoUpdater.on('error', (message) => {
-  console.error('There was a problem updating the application')
-  console.error(message)
-})

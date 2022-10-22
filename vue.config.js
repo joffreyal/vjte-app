@@ -9,5 +9,8 @@ module.exports = defineConfig({
       customFileProtocol: './',
     }
   },
+  configureWebpack: {
+    devtool: 'source-map'
+  },
 },
 )

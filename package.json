@@ -1,6 +1,6 @@
 {
   "name": "vjte-app",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Application de gestion pour la boutique Viens je t'emmene",
   "author": "Jaz",
   "private": true,
@@ -11,7 +11,9 @@
     "electron:build": "vue-cli-service electron:build",
     "electron:serve": "vue-cli-service electron:serve",
     "postinstall": "electron-builder install-app-deps",
-    "postuninstall": "electron-builder install-app-deps"
+    "postuninstall": "electron-builder install-app-deps",
+    "initToken": "npm run env GH_TOKEN=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",
+    "electron:publish": "npm run initToken && vue-cli-service electron:build -p always"
   },
   "main": "background.js",
   "dependencies": {
@@ -19,6 +21,8 @@
     "bootstrap-icons": "^1.9.1",
     "core-js": "^3.8.3",
     "currency.js": "^2.0.4",
+    "electron-log": "^4.4.8",
+    "electron-updater": "^5.3.0",
     "vue": "^3.2.13"
   },
   "devDependencies": {
