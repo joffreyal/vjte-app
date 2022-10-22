@@ -365,9 +365,9 @@ export default {
   computed: {
     totalSales() {
       const result = this.sales.reduce((accumulator, obj) => {
-        return accumulator + obj.price;
+        return currency(accumulator).add(obj.price);
       }, 0);
-      return result;
+      return result.value;
     },
     paymentReste() {
       const totalPayment = this.payments.reduce((accumulator, payment) => {
@@ -398,6 +398,8 @@ export default {
       data.data.forEach(item => {
         this.creatorList.push({'label': item, 'value': item})
       });
+      // this.creatorList = this.creatorList.sort();
+      this.creatorList.sort((a, b) => a.label.localeCompare(b.label))
     });
   },
   beforeUnmount() {

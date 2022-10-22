@@ -22,6 +22,14 @@
           {{loadingOperations ? '' : 'liste des opérations'}}
         </button>
       </div>
+      <div class="col-auto">
+        <div class="form-check">
+          <input class="form-check-input" v-model="fullmonth" type="checkbox" value="" id="flexCheckDefault">
+          <label class="form-check-label" for="flexCheckDefault">
+            Mois complet
+          </label> {{fullmonth}}
+        </div>
+      </div>
     </div>
     <div class="row">
       <table class="table">
@@ -69,6 +77,7 @@ export default {
       loadingOperations: false,
       registerOperationsList: [],
       registerOperationsListFilter: "all",
+      fullmonth: false,
       paymentOptions: [
         {'label': 'CB', 'value': 'CB'},
         {'label': 'Espece', 'value': 'Espece'},
@@ -87,7 +96,7 @@ export default {
         }
       };
       this.loadingOperations = true
-      fetch(this.appURL + "?q=registeroperations&date=" +date, requestOptions)
+      fetch(this.appURL + "?q=registeroperations&date=" +date+ "&fullmonth="+this.fullmonth, requestOptions)
       .then(response => response.json())
       .then(data => {
         this.registerOperationsList = data.data;
