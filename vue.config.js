@@ -5,7 +5,8 @@ module.exports = defineConfig({
     electronBuilder: {
       builderOptions: {
         publish: ['github']
-      }
+      },
+      customFileProtocol: './',
     }
   },
 },
