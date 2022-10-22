@@ -36,6 +36,9 @@ async function createWindow() {
     // Load the index.html when not in development
     win.loadURL('app://./index.html')
     autoUpdater.setFeedURL({ url })
+    setInterval(() => {
+      autoUpdater.checkForUpdates()
+    }, 60000)
   }
 
   win.webContents.setWindowOpenHandler(({ url }) => {
@@ -88,3 +91,23 @@ if (isDevelopment) {
     })
   }
 }
+
+autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
+  const dialogOpts = {
+    type: 'info',
+    buttons: ['Restart', 'Later'],
+    title: 'Application Update',
+    message: process.platform === 'win32' ? releaseNotes : releaseName,
+    detail:
+      'Une nouvelle version a été téléchargée. Redémarrez l\'application pour appliquer la mise à jour.',
+  }
+
+  dialog.showMessageBox(dialogOpts).then((returnValue) => {
+    if (returnValue.response === 0) autoUpdater.quitAndInstall()
+  })
+})
+
+autoUpdater.on('error', (message) => {
+  console.error('There was a problem updating the application')
+  console.error(message)
+})
