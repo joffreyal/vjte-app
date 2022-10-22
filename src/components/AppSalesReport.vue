@@ -29,10 +29,10 @@
       </div>
     </div>
     <div class="row">
-      <div v-for='(sales, index) in salesReport' class="card" :key="index+'sales'">
+      <div v-for='(sales, index) in salesReport' class="card" :key="removeSpace(index)+'sales'">
         <div class="card-body">
-          <button class="btn btn-light" type="button" data-bs-toggle="collapse" :data-bs-target="'#saleTable'+index">{{index}}</button>
-          <div class="collapse" :id="'saleTable'+index">
+          <button class="btn btn-light" type="button" data-bs-toggle="collapse" :data-bs-target="'#saleTable'+removeSpace(index)">{{index}}</button>
+          <div class="collapse" :id="'saleTable'+removeSpace(index)">
             <table class="table">
               <thead class="table-light">
                 <tr>
@@ -106,6 +106,9 @@ export default {
       }
       return (total);
     },
+    removeSpace(string) {
+      return string.replace(/\s+/g, '');
+    }
   }
 }
 </script>
