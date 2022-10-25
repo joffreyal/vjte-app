@@ -41,7 +41,8 @@
       <button type="button" class="btn-close" @click="toaster.delete(toast)" aria-label="Close"></button>
     </div>
     <div class="toast-body">
-      {{toast.message}}
+      <a v-if="toast.link" :href="toast.link" target="_blank">{{toast.message}}</a>
+      <div v-if="!toast.link">{{toast.message}}</div>
     </div>
   </div>
 </div>
@@ -70,13 +71,14 @@ export default {
       toasts: [],
       toaster: {
         toasts: [],
-        add: function(title, message, color='#007aff') {
+        add: function(title, message, color='#007aff', link=null) {
             var date = new Date();
             var toast = {
               title: title,
               time: date.getHours()+":"+date.getMinutes(),
               message: message,
-              color: color
+              color: color,
+              link: link
             }
             this.toasts.push(toast);
         },

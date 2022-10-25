@@ -28,6 +28,9 @@
         </div>
       </div>
     </div>
+
+    <hr>
+
     <h3>Produits</h3>
     <div class="row mb-3" v-for="(sale, saleIndex) in sales" :key="saleIndex+'sale'">
       <div class="col">
@@ -69,7 +72,8 @@
         </div>
       </div>
       <div class="col">
-        <button class="btn btn-danger" @click="deleteSaleRow(sale)">X</button>
+        <button class="btn btn-danger me-3" @click="deleteSaleRow(sale)">X</button>
+        <button class="btn btn-success" @click="duplicateSaleRow(sale)"><i class="bi bi-clipboard-plus"></i></button>
       </div>
     </div>
     <div class="row mb-3">
@@ -80,10 +84,13 @@
     <div class="row mb-3">
       <div class="input-group col-sm-6">
         <span class="input-group-text">TOTAL</span>
-        <input v-model="totalSales" type="number" step="any" class="form-control" placeholder="total" disabled>
+        <input v-model="totalSalesCurrency" type="number" step="any" class="form-control" placeholder="total" disabled>
         <span class="input-group-text">€</span>
       </div>
     </div>
+
+    <hr>
+
     <div class="row">
       <h3>Paiements</h3>
     </div>
@@ -123,13 +130,35 @@
         <button class="btn btn-primary" @click="addLeftToLastPayment()"><i class="bi bi-arrow-up-circle"></i> Reste : {{formatToEuro(paymentReste)}} </button>
       </div>
     </div>
+    <div class="collapse mb-3" :class="billInfo.generateBill ? 'show' : ''" id="collapseBillInfo">
+      <div class="card card-body">
+        <h3>Informations de facturation</h3>
+        <input v-model="billInfo.name" type="text" class="form-control mb-1" placeholder="Nom">
+        <input v-model="billInfo.adress" type="text" class="form-control mb-1" placeholder="N° et rue">
+        <input v-model="billInfo.cityCode" type="text" class="form-control mb-1" placeholder="Code Postal">
+        <input v-model="billInfo.city" type="text" class="form-control mb-1" placeholder="Ville">
+      </div>
+    </div>
     <div class="row mb-3">
-      <button class="btn btn-primary" @click="onSubmit()">
-        <span v-if="sendingSale" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-        {{sendingSale ? '' : 'Valider'}}
-      </button>
+      <div class="d-grid gap-2 col-8">
+        <button class="btn btn-primary" @click="onSubmit()">
+          <span v-if="sendingSale" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          {{sendingSale ? '' : 'Valider'}}
+        </button>
+      </div>
+      <div class="col-auto">
+        <div class="form-check">
+          <input class="form-check-input" v-model="billInfo.generateBill" type="checkbox" value="" id="flexCheckDefault">
+          <label class="form-check-label" for="flexCheckDefault">
+            génerer une facture
+          </label>
+        </div>
+      </div>
     </div>
   </div>
+
+  
+  
 </template>
 
 <script>
@@ -192,6 +221,13 @@ export default {
       open: false,
       hasFormError: false,
       timer: "",
+      billInfo: {
+        generateBill: false,
+        name: "",
+        adress: "",
+        cityCode: "",
+        city: "",
+      }
     }
   },
   created() {
@@ -207,6 +243,10 @@ export default {
     deleteSaleRow(saleToDelete) {
       //this.sales.$remove(sale);
       this.sales = this.sales.filter(sale => sale != saleToDelete);
+    },
+    duplicateSaleRow(sale)  {
+      let newSale = Object.assign({}, sale);
+      this.sales.push(newSale);
     },
     deletePaymentRow(paymentToDelete) {
       //this.payments.$remove(payment);
@@ -302,6 +342,7 @@ export default {
     resetForm() {
       this.sales = [new Sale()];
       this.payments = [new Payment()];
+      this.billInfo = {generateBill: false, name: "", adress: "", cityCode: "", city: ""};
     },
     onSubmit() {
       this.hasFormError = false;
@@ -328,7 +369,8 @@ export default {
         date : this.date,
         hour : this.hour,
         sales: this.sales,
-        payments: this.payments
+        payments: this.payments,
+        billInfo: this.billInfo
       };
       // POST request using fetch with error handling
       const requestOptions = {
@@ -354,6 +396,9 @@ export default {
         this.resetForm();
         this.postId = data.id;
         this.toaster.add('Succés', 'La vente a bien été ajouter', '#198754');
+        if(data.data) {
+          this.toaster.add('Facture', 'Lien vers la facture', '#198754', data.data);
+        }
       })
       .catch(error => {
         this.errorMessage = error;
@@ -368,6 +413,12 @@ export default {
         return currency(accumulator).add(obj.price);
       }, 0);
       return result.value;
+    },
+    totalSalesCurrency() {
+      const result = this.sales.reduce((accumulator, obj) => {
+        return currency(accumulator).add(obj.price);
+      }, 0);
+      return result;
     },
     paymentReste() {
       const totalPayment = this.payments.reduce((accumulator, payment) => {

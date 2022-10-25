@@ -27,7 +27,7 @@
           <input class="form-check-input" v-model="fullmonth" type="checkbox" value="" id="flexCheckDefault">
           <label class="form-check-label" for="flexCheckDefault">
             Mois complet
-          </label> {{fullmonth}}
+          </label>
         </div>
       </div>
     </div>

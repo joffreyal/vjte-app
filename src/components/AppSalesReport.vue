@@ -21,11 +21,19 @@
         <span class="input-group-text">A</span>
         <input v-model="salesReportEnd" type="date" class="form-control">
       </div>
-      <div class="col">
+      <div class="col-auto">
         <button class="btn btn-primary" @click="getSalesReport()">
           <span v-if="loadingReport" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           {{loadingReport ? '' : 'Génerer le rapport'}}
         </button>
+      </div>
+      <div class="col">
+        <div class="form-check">
+          <input class="form-check-input" v-model="saveReport" type="checkbox" value="" id="flexCheckDefault">
+          <label class="form-check-label" for="flexCheckDefault">
+            sauvegarder en pdf
+          </label>
+        </div>
       </div>
     </div>
     <div class="row">
@@ -77,6 +85,7 @@ export default {
       salesReportEnd: '',
       salesReport: [],
       loadingReport: false,
+      saveReport: false
     }
   },
   methods: {
@@ -89,7 +98,7 @@ export default {
         }
       };
       this.loadingReport = true;
-      fetch(this.appURL + "?q=salesreport&startDate=" +this.salesReportStart+ '&endDate='+this.salesReportEnd, requestOptions)
+      fetch(this.appURL + "?q=salesreport&startDate=" +this.salesReportStart+ '&endDate='+this.salesReportEnd+ '&save='+this.saveReport, requestOptions)
       .then(response => response.json())
       .then(data => {
         this.salesReport = data.data;

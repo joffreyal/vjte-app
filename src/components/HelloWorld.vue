@@ -38,14 +38,13 @@
     </ul>
     <div class='fixed-bottom'>
       <p>
-        Version : {{appVersion}} author : Jaz
+        Version : {{appVersion}}
       </p>
     </div>
   </div>
 </template>
 
 <script>
-// import { version } from "../../package.json"
 
 export default {
   name: 'HelloWorld',
