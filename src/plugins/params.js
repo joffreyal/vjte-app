@@ -4,7 +4,7 @@ export default {
   install: (app) => {
 
     app.config.globalProperties.$params = {
-      backUrl: "https://script.google.com/macros/s/AKfycbwZ7liUlAPYLTwRyplURd-cxf8ngA-arUF8zYbFgnNGO2xwhH0C4i8e33Y7xthPvLt1/exec",
+      backUrl: "https://script.google.com/macros/s/AKfycbxzXLKg4xlav23Dam4Cks3qg7hcJo40cAcY4iKvv0v1nHs7sFR896-yIMu8lQSzIw/exec",
       version: packageJson.version
     }
   }

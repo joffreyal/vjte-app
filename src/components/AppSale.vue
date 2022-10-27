@@ -395,7 +395,7 @@ export default {
         this.sendingSale = false;
         this.resetForm();
         this.postId = data.id;
-        this.toaster.add('Succés', 'La vente a bien été ajouter', '#198754');
+        this.toaster.add('Succés', 'La vente a bien été ajoutée', '#198754');
         if(data.data) {
           this.toaster.add('Facture', 'Lien vers la facture', '#198754', data.data);
         }

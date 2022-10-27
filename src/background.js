@@ -6,9 +6,6 @@ import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
-// const server = "https://hazel-update-vjte.vercel.app/"
-// const url = `${server}/update/${process.platform}/${app.getVersion()}`
-autoUpdater.logger = require("electron-log")
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -33,13 +30,11 @@ async function createWindow() {
     // Load the url of the dev server if in development mode
     await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
     if (!process.env.IS_TEST) win.webContents.openDevTools()
-    console.log('test')
-    autoUpdater.checkForUpdatesAndNotify()
   } else {
     createProtocol('app')
     // Load the index.html when not in development
     win.loadURL('app://./index.html')
-    autoUpdater.checkForUpdatesAndNotify()
+    autoUpdater.checkForUpdatesAndNotify();
   }
 
   win.webContents.setWindowOpenHandler(({ url }) => {
@@ -47,14 +42,6 @@ async function createWindow() {
     return { action: 'deny' };
   });
 }
-
-autoUpdater.on('checking-for-update', () => {
-  console.log('checking for update')
-})
-
-autoUpdater.on('error', (error) => {
-  console.log(e)
-})
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {

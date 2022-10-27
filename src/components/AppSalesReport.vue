@@ -37,9 +37,10 @@
       </div>
     </div>
     <div class="row">
-      <div v-for='(sales, index) in salesReport' class="card" :key="removeSpace(index)+'sales'">
+      <div v-for='(creator, index) in salesReport' class="card" :key="removeSpace(index)+'sales'">
         <div class="card-body">
           <button class="btn btn-light" type="button" data-bs-toggle="collapse" :data-bs-target="'#saleTable'+removeSpace(index)">{{index}}</button>
+          <a v-if="creator.reportUrl" :href="creator.reportUrl" target="_blank">rapport PDF</a>
           <div class="collapse" :id="'saleTable'+removeSpace(index)">
             <table class="table">
               <thead class="table-light">
@@ -51,7 +52,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(sale, saleIndex) in sales" :key="saleIndex+'sale'">
+                <tr v-for="(sale, saleIndex) in creator.sales" :key="saleIndex+'sale'">
                   <th scope="row">{{ saleIndex +1  }}</th>
                   <th scope="row">{{ sale.date }}</th>
                   <th scope="row">{{ sale.product }}</th>
@@ -63,7 +64,7 @@
                   <th></th>
                   <th></th>
                   <th>TOTAL</th>
-                  <th>{{totalOfSales(sales, true)}}</th>
+                  <th>{{totalOfSales(creator.sales, true)}}</th>
                 </tr>
               </tfoot>
             </table>
@@ -102,6 +103,13 @@ export default {
       .then(response => response.json())
       .then(data => {
         this.salesReport = data.data;
+        this.salesReport = Object.keys(data.data).sort().reduce(
+          (obj, key) => {
+            obj[key] = data.data[key];
+            return obj
+          },
+          {}
+        );
         this.loadingReport = false;
       });
     },
