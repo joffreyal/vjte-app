@@ -6,15 +6,17 @@
         <i class="bi bi-info-lg"></i>
       </button>
     </h2>
-    <div class="collapse" id="salesInfo">
-      <div class="card card-body">
-        WIP : some help
-      </div>
+    <div class="card text-bg-primary collapse m-4" id="salesInfo">
+      <div class="card-body">
+          <p class="card-text">Permet de visualiser toutes les opérations de caisse pour le jour choisie.</p>
+          <p class="card-text">Sélectionnez "Mois complet" si vous souhaitez afficher toutes les opérations du mois.</p>
+        </div>
     </div>
 
-    <div class="row">
+    <div class="row mb-2">
       <div class="col-auto">
-        <input v-model="registerOperationsDate" type="date" class="form-control">
+        <input v-show="fullmonth" v-model="registerOperationsMonth" type="month" class="form-control" @change="onMonthChange()">
+        <input v-show="!fullmonth" v-model="registerOperationsDate" type="date" class="form-control" @change="onDateChange()">
       </div>
       <div class="col-auto">
         <button class="btn btn-primary" @click="getRegisterOperations(registerOperationsDate)">
@@ -22,7 +24,7 @@
           {{loadingOperations ? '' : 'liste des opérations'}}
         </button>
       </div>
-      <div class="col-auto">
+      <div class="col-auto d-flex align-items-center">
         <div class="form-check">
           <input class="form-check-input" v-model="fullmonth" type="checkbox" value="" id="flexCheckDefault">
           <label class="form-check-label" for="flexCheckDefault">
@@ -50,7 +52,7 @@
             <tr v-if="operation[0] === registerOperationsListFilter || registerOperationsListFilter === 'all'">
               <th scope="row">{{index +1 }}</th>
               <th scope="row">{{operation[0]}}</th>
-              <th scope="row">{{operation[1]}}</th>
+              <th scope="row">{{displayCurrency(operation[1])}}</th>
             </tr>
           </template>
         </tbody>
@@ -74,6 +76,7 @@ export default {
     return {
       appURL: this.$params.backUrl,
       registerOperationsDate: '',
+      registerOperationsMonth: '',
       loadingOperations: false,
       registerOperationsList: [],
       registerOperationsListFilter: "all",
@@ -103,6 +106,15 @@ export default {
         this.loadingOperations = false;
       });
     },
+    onDateChange() {
+      this.registerOperationsMonth = this.registerOperationsDate.substring(0,7)
+    },
+    onMonthChange() {
+      this.registerOperationsDate = this.registerOperationsMonth + '-' + this.registerOperationsDate.split('-')[2]
+    },
+    displayCurrency(value) {
+      return currency(value);
+    }
   },
   computed: {
     totalOperations() {
@@ -114,7 +126,13 @@ export default {
         }
       });
       return result;
-    }
+    },
+  },
+  mounted() {
+    var date = new Date();
+    var dateString = new Date(date.getTime() - (date.getTimezoneOffset() * 60000 )).toISOString();
+    this.registerOperationsDate = dateString.substring(0, 10);
+    this.registerOperationsMonth = dateString.substring(0, 7);
   }
 }
 </script>

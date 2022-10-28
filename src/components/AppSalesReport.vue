@@ -6,28 +6,29 @@
         <i class="bi bi-info-lg"></i>
       </button>
     </h2>
-    <div class="collapse" id="salesInfo">
-      <div class="card card-body">
-        WIP
-      </div>
+    <div class="card text-bg-primary collapse m-4" id="salesInfo">
+      <div class="card-body">
+          <p class="card-text">Permet d'afficher toutes les ventes pour chaque créateur dans la période selectionnée</p>
+          <p class="card-text">Séléctionnez "sauvegarder en pdf" afin de génerer les rapports en PDF</p>
+        </div>
     </div>
 
-    <div class="row">
-      <div class="input-group col">
+    <div class="row d-flex align-items-center">
+      <div class="input-group col m-1">
         <span class="input-group-text">De</span>
         <input v-model="salesReportStart" type="date" class="form-control">
       </div>
-      <div class="input-group col">
+      <div class="input-group col m-1">
         <span class="input-group-text">A</span>
         <input v-model="salesReportEnd" type="date" class="form-control">
       </div>
-      <div class="col-auto">
+      <div class="col-auto m-1">
         <button class="btn btn-primary" @click="getSalesReport()">
           <span v-if="loadingReport" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           {{loadingReport ? '' : 'Génerer le rapport'}}
         </button>
       </div>
-      <div class="col">
+      <div class="col m-1">
         <div class="form-check">
           <input class="form-check-input" v-model="saveReport" type="checkbox" value="" id="flexCheckDefault">
           <label class="form-check-label" for="flexCheckDefault">

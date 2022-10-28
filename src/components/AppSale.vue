@@ -5,13 +5,14 @@
         <i class="bi bi-info-lg"></i>
       </button>
     </h2>
-    <div class="collapse" id="salesInfo">
-      <div class="card card-body">
-        Permet d'enregistrer les ventes dans la feuille de calcul google.
-      </div>
+    <div class="card text-bg-primary collapse m-4" id="salesInfo">
+      <div class="card-body">
+          <p class="card-text">Permet d'enregistrer les ventes dans la feuille de calcul google.</p>
+          <p class="card-text">Séléctionnez "générer une facture" afin de récuperer une facture en PDF</p>
+        </div>
     </div>
 
-    <div class="row mb-3">
+    <div class="row mb-3 d-flex align-items-center">
       <div class="form-group col-auto">
         <label for="inputDate" >Date</label>
         <input v-model="date" type="date" class="form-control" id="inputDate">
@@ -146,7 +147,7 @@
           {{sendingSale ? '' : 'Valider'}}
         </button>
       </div>
-      <div class="col-auto">
+      <div class="col-auto d-flex align-items-center">
         <div class="form-check">
           <input class="form-check-input" v-model="billInfo.generateBill" type="checkbox" value="" id="flexCheckDefault">
           <label class="form-check-label" for="flexCheckDefault">
@@ -257,7 +258,7 @@ export default {
         var date = new Date();
         var dateString = new Date(date.getTime() - (date.getTimezoneOffset() * 60000 )).toISOString();
 
-        this.hour = dateString.substr(11, 5);
+        this.hour = dateString.substring(11, 16);
       }
     },
     //When enter pressed on the input
@@ -402,7 +403,7 @@ export default {
       })
       .catch(error => {
         this.errorMessage = error;
-        this.toaster.add('Erreur', "Il semble qu'une erreur ai eu lieu lors de l'envoie de la vente", '#dc3545');
+        this.toaster.add('Erreur', "Il semble qu'une erreur ait eu lieu lors de l'envoie de la vente", '#dc3545');
         console.error('There was an error!', error);
       });
     },
@@ -430,9 +431,9 @@ export default {
   mounted() {
     var date = new Date();
     var dateString = new Date(date.getTime() - (date.getTimezoneOffset() * 60000 )).toISOString();
-
-    this.date = dateString.substr(0, 10);
-    this.hour = dateString.substr(11, 5);
+    
+    this.date = dateString.substring(0, 10);
+    this.hour = dateString.substring(11, 16);
 
     //get the creator list
     const requestOptions = {

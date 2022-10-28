@@ -1,23 +1,23 @@
 <template>
   <nav class="navbar navbar-expand-lg bg-light">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">Menu</a>
+      <a class="navbar-brand" href="#" @click="currentView.change('HomePage')">Menu</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link" @click="currentView='HelloWorld'" href="#">Accueil</a>
+            <a class="nav-link" @click="currentView.change('HomePage')" href="#">Accueil</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" @click="currentView='AppSale'" href="#">Ventes</a>
+            <a class="nav-link" @click="currentView.change('AppSale')" href="#">Ventes</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" @click="currentView='AppRegisterOperations'" href="#">Opérations de caisse</a>
+            <a class="nav-link" @click="currentView.change('AppRegisterOperations')" href="#">Opérations de caisse</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" @click="currentView='AppSalesReport'" href="#">Rapports de ventes</a>
+            <a class="nav-link" @click="currentView.change('AppSalesReport')" href="#">Rapports de ventes</a>
           </li>
         </ul>
       </div>
@@ -25,7 +25,7 @@
   </nav>
 
   <KeepAlive>
-    <component :is="currentView" />
+    <component :is="currentView.value" />
   </KeepAlive>
 
 <!-- TOAST -->
@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import HomePage from './components/HomePage.vue'
 import AppSale from './components/AppSale.vue'
 import AppRegisterOperations from './components/AppRegisterOperations.vue'
 import AppSalesReport from './components/AppSalesReport.vue'
@@ -60,14 +60,19 @@ import { computed } from 'vue'
 export default {
   name: 'App',
   components: {
-    HelloWorld,
+    HomePage,
     AppSale,
     AppRegisterOperations,
     AppSalesReport
   },
   data() {
     return {
-      currentView: 'HelloWorld',
+      currentView: {
+        value : 'HomePage',
+        change: function(newPage) {
+          this.value = newPage;
+        }
+      },
       toasts: [],
       toaster: {
         toasts: [],
@@ -91,7 +96,8 @@ export default {
   methods: {},
   provide() {
     return {
-      toaster: computed(() => this.toaster)
+      toaster: computed(() => this.toaster),
+      currentView: computed(() => this.currentView),
     }
   }
 }
