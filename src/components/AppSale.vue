@@ -200,7 +200,7 @@ function Payment(mode = "", amount = "") {
 }
 
 export default {
-  inject: ['toaster'],
+  inject: ['toaster', 'accessToken'],
   data() {
     return {
       appURL: this.$params.backUrl,
@@ -310,6 +310,7 @@ export default {
         method: 'GET',
         headers: {
           "Content-Type": "text/plain;charset=utf-8",
+          "Authorization": "Bearer " + this.accessToken,
         }
       };
       fetch(this.appURL + "?q=suggestion&creator=" +creator, requestOptions)
@@ -379,6 +380,7 @@ export default {
         method: 'POST',
         headers: {
           "Content-Type": "text/plain;charset=utf-8",
+          "Authorization": "Bearer " + this.accessToken,
         },
         body: JSON.stringify(formattedData)
       };
@@ -441,7 +443,9 @@ export default {
       method: 'GET',
       headers: {
         "Content-Type": "text/plain;charset=utf-8",
-      }
+        "Authorization": "Bearer " + this.accessToken,
+      },
+      muteHttpExceptions: true,
     };
     fetch(this.appURL + "?q=listCreator", requestOptions)
     .then(response => response.json())
@@ -453,6 +457,7 @@ export default {
       // this.creatorList = this.creatorList.sort();
       this.creatorList.sort((a, b) => a.label.localeCompare(b.label))
     });
+    
   },
   beforeUnmount() {
     clearInterval(this.timer);

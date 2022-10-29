@@ -4,8 +4,12 @@ export default {
   install: (app) => {
 
     app.config.globalProperties.$params = {
-      backUrl: "https://script.google.com/macros/s/AKfycbyJK2_pEiCJgO2B5LAnOAAEB9S5CCVSg1uXtvmoPk2Y8HKlEnhcLEeiG6xy53iS0UZN/exec",
+      // backUrl: "https://script.google.com/macros/s/AKfycbx50mVgytcweddvA5LbXRMb0hgwxNI6nSOfcfLynEE/dev",
+      backUrl: "https://script.google.com/macros/s/AKfycbxPOR7ptGz9SX9MF2DMCahzNcPMPzAKUcjYFhNrtNFiGbdoKBIRain19frUYnnO0pz-/exec",
       version: packageJson.version
     }
   }
 }
+
+
+

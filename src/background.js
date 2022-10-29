@@ -1,11 +1,15 @@
 'use strict'
 
-import { app, protocol, BrowserWindow, shell } from 'electron'
+import { app, protocol, BrowserWindow, shell, ipcMain } from 'electron'
 import { autoUpdater } from 'electron-updater'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
+import ElectronGoogleOAuth2 from '@getstation/electron-google-oauth2';
+import Store from 'electron-store';
+import path from 'path';
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
+const store = new Store();
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -22,7 +26,9 @@ async function createWindow() {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
-      contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION
+      contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
+      preload: path.join(__dirname, 'preload.js'),
+      webSecurity: false
     }
   })
 
@@ -71,7 +77,35 @@ app.on('ready', async () => {
     }
   }
   createWindow()
+
+  const myApiOauth = new ElectronGoogleOAuth2(
+    '836107862985-f59fthsgphu6tda8f8ahko7fnsj7kq66.apps.googleusercontent.com',
+    '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',
+    [
+      "https://www.googleapis.com/auth/drive",
+      "https://www.googleapis.com/auth/drive.readonly",
+      "https://www.googleapis.com/auth/script.external_request",
+      "https://www.googleapis.com/auth/spreadsheets"
+    ]
+  );
+  
+  const refreshToken = store.get('refreshToken')
+  
+  if(refreshToken) {
+    myApiOauth.setTokens({ refresh_token: refreshToken });
+  } else {
+    myApiOauth.openAuthWindowAndGetTokens()
+      .then(token => {
+        store.set('refreshToken', token.refresh_token)
+        store.set('accessToken', token.access_token)
+      });
+  }
 })
+
+ipcMain.handle('getStoreValue', async (event, key) => {
+  const result = await store.get(key)
+	return result;
+});
 
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {

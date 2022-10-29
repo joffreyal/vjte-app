@@ -80,6 +80,7 @@
 import currency from "currency.js"
 const EURO = value => currency(value, { symbol: '€', decimal: ',', separator: '.' });
 export default {
+  inject: ['accessToken'],
   data() {
     return {
       appURL: this.$params.backUrl,
@@ -97,6 +98,7 @@ export default {
         method: 'GET',
         headers: {
           "Content-Type": "text/plain;charset=utf-8",
+          "Authorization": "Bearer " + this.accessToken,
         }
       };
       this.loadingReport = true;
