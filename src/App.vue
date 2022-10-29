@@ -99,7 +99,7 @@ export default {
       toaster: computed(() => this.toaster),
       currentView: computed(() => this.currentView),
     }
-  }
+  },
 }
 </script>
 
