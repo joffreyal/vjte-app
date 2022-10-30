@@ -78,34 +78,24 @@ app.on('ready', async () => {
   }
   createWindow()
 
-  const myApiOauth = new ElectronGoogleOAuth2(
-    '836107862985-f59fthsgphu6tda8f8ahko7fnsj7kq66.apps.googleusercontent.com',
-    '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',
-    [
-      "https://www.googleapis.com/auth/drive",
-      "https://www.googleapis.com/auth/drive.readonly",
-      "https://www.googleapis.com/auth/script.external_request",
-      "https://www.googleapis.com/auth/spreadsheets"
-    ]
-  );
-  
-  const refreshToken = store.get('refreshToken')
-  
-  if(refreshToken) {
-    myApiOauth.setTokens({ refresh_token: refreshToken });
-  } else {
-    myApiOauth.openAuthWindowAndGetTokens()
-      .then(token => {
-        store.set('refreshToken', token.refresh_token)
-        store.set('accessToken', token.access_token)
-      });
-  }
+  connectGoogle()
 })
 
 ipcMain.handle('getStoreValue', async (event, key) => {
   const result = await store.get(key)
 	return result;
 });
+
+ipcMain.handle('setStoreValue', async (event, key) => {
+  store.set(key[0], key[1])
+  console.log(store)
+  return true;
+});
+
+ipcMain.handle('resetConnection', async () => {
+  reConnectGoogle()
+  return true;
+})
 
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {
@@ -120,4 +110,34 @@ if (isDevelopment) {
       app.quit()
     })
   }
+}
+
+function connectGoogle() {
+  const myApiOauth = new ElectronGoogleOAuth2(
+    process.env.VUE_APP_GOOGLE_CLIENT_ID,
+    process.env.VUE_APP_GOOGLE_CLIENT_SECRET,
+    [
+      "https://www.googleapis.com/auth/drive",
+      "https://www.googleapis.com/auth/drive.readonly",
+      "https://www.googleapis.com/auth/script.external_request",
+      "https://www.googleapis.com/auth/spreadsheets"
+    ],
+    { successRedirectURL: 'https://sites.google.com/view/vjte-success-connection/accueil' }
+  );
+  
+  const tokenObj = store.get('token')
+  if(tokenObj.refresh_token) {
+    myApiOauth.setTokens({ refresh_token: tokenObj.refresh_token });
+    myApiOauth.on('')
+  } else {
+    myApiOauth.openAuthWindowAndGetTokens()
+      .then(token => {
+        store.set('token', token)
+      });
+  }
+}
+
+function reConnectGoogle() {
+  store.set('token', '')
+  connectGoogle()
 }

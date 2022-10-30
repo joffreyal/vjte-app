@@ -72,7 +72,7 @@
 import currency from "currency.js"
 
 export default {
-  inject: ['accessToken'],
+  inject: ['toaster'],
   data() {
     return {
       appURL: this.$params.backUrl,
@@ -97,15 +97,26 @@ export default {
         method: 'GET',
         headers: {
           "Content-Type": "text/plain;charset=utf-8",
-          "Authorization": "Bearer " + this.accessToken,
         }
       };
       this.loadingOperations = true
       fetch(this.appURL + "?q=registeroperations&date=" +date+ "&fullmonth="+this.fullmonth, requestOptions)
-      .then(response => response.json())
-      .then(data => {
+      .then(async response => {
+        
+        if (!response.ok) {
+          const error = response.status;
+          return Promise.reject(error);
+        }
+        const data = await response.json();
+
         this.registerOperationsList = data.data;
         this.loadingOperations = false;
+      })
+      .catch(error => {
+        this.loadingOperations = false;
+        this.errorMessage = error;
+        this.toaster.add('Erreur', "Il semble qu'une erreur ait eu lieu lors de la récupération des opérations", '#dc3545');
+        console.error('There was an error!', error);
       });
     },
     onDateChange() {
