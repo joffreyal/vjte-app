@@ -164,43 +164,13 @@
 
 <script>
 import currency from "currency.js"
+import Sale from "../models/Sale.js"
+import Payment from "../models/Payment.js"
 
 const EURO = value => currency(value, { symbol: '€', decimal: ',', separator: '.' });
 
-function Sale(creator = "", product = "", price = null) {
-  this.creator = creator;
-  this.product = product;
-  this.price = price;
-  this.validation = {
-    creator: true,
-    product: true,
-    price: true,
-  };
-  this.checkValidation = function() {
-    this.validation.creator = this.creator !== '' ? true : false;
-    this.validation.product = this.product !== '' ? true : false;
-    this.validation.price = this.price !== null ? true : false;
-
-    return this.validation.creator & this.validation.product & this.validation.price;
-  }
-}
-function Payment(mode = "", amount = "") {
-  this.mode = mode;
-  this.amount = amount;
-  this.validation = {
-    mode: true,
-    amount: true,
-  };
-  this.checkValidation = function() {
-    this.validation.mode = this.mode !== '' ? true : false;
-    this.validation.amount = this.amount !== '' ? true : false;
-
-    return this.validation.mode & this.validation.amount;
-  }
-}
-
 export default {
-  inject: ['toaster', 'accessToken'],
+  inject: ['toaster'],
   data() {
     return {
       appURL: this.$params.backUrl,
@@ -310,7 +280,6 @@ export default {
         method: 'GET',
         headers: {
           "Content-Type": "text/plain;charset=utf-8",
-          "Authorization": "Bearer " + this.accessToken,
         }
       };
       fetch(this.appURL + "?q=suggestion&creator=" +creator, requestOptions)
@@ -380,21 +349,18 @@ export default {
         method: 'POST',
         headers: {
           "Content-Type": "text/plain;charset=utf-8",
-          "Authorization": "Bearer " + this.accessToken,
         },
         body: JSON.stringify(formattedData)
       };
       fetch(this.appURL, requestOptions)
       .then(async response => {
-        const data = await response.json();
-
         // check for error response
         if (!response.ok) {
-          this.sendingSale = false;
           // get error message from body or default to response status
-          const error = (data && data.message) || response.status;
+          const error = response.status;
           return Promise.reject(error);
         }
+        const data = await response.json();
         this.sendingSale = false;
         this.resetForm();
         this.postId = data.id;
@@ -404,6 +370,7 @@ export default {
         }
       })
       .catch(error => {
+        this.sendingSale = false;
         this.errorMessage = error;
         this.toaster.add('Erreur', "Il semble qu'une erreur ait eu lieu lors de l'envoie de la vente", '#dc3545');
         console.error('There was an error!', error);
@@ -437,26 +404,24 @@ export default {
     this.date = dateString.substring(0, 10);
     this.hour = dateString.substring(11, 16);
 
-    //get the creator list
     const requestOptions = {
-      redirect: "follow",
-      method: 'GET',
-      headers: {
-        "Content-Type": "text/plain;charset=utf-8",
-        "Authorization": "Bearer " + this.accessToken,
-      },
-      muteHttpExceptions: true,
-    };
-    fetch(this.appURL + "?q=listCreator", requestOptions)
-    .then(response => response.json())
-    .then(data => {
-      this.creatorList = [];
-      data.data.forEach(item => {
-        this.creatorList.push({'label': item, 'value': item})
-      });
-      // this.creatorList = this.creatorList.sort();
-      this.creatorList.sort((a, b) => a.label.localeCompare(b.label))
-    });
+          redirect: "follow",
+          method: 'GET',
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8",
+          },
+          muteHttpExceptions: true,
+        };
+        fetch(this.appURL + "?q=listCreator", requestOptions)
+        .then(response => response.json())
+        .then(data => {
+          this.creatorList = [];
+          data.data.forEach(item => {
+            this.creatorList.push({'label': item, 'value': item})
+          });
+          
+          this.creatorList.sort((a, b) => a.label.localeCompare(b.label))
+        });
     
   },
   beforeUnmount() {

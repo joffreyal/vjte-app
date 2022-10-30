@@ -1,9 +1,9 @@
 {
   "name": "vjte-app",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Application de gestion pour la boutique Viens je t'emmene",
   "author": "Jaz",
-  "private": true,
+  "private": false,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",

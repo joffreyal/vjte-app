@@ -19,6 +19,9 @@
           <li class="nav-item">
             <a class="nav-link" @click="currentView.change('AppSalesReport')" href="#">Rapports de ventes</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" @click="$token.reConnectGoogle()" href="#">Se reconnecter</a>
+          </li>
         </ul>
       </div>
     </div>

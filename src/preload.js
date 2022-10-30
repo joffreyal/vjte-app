@@ -16,7 +16,7 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
     }
   },
   invoke: (channel, args) => {
-    let validChannels = ['getStoreValue'] // <-- Array of all ipcRenderer Channels used in the client
+    let validChannels = ['getStoreValue', 'setStoreValue', 'resetConnection'] // <-- Array of all ipcRenderer Channels used in the client
     if (validChannels.includes(channel)) {
         return ipcRenderer.invoke(channel, args)
     }

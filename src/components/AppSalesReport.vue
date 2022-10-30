@@ -80,7 +80,7 @@
 import currency from "currency.js"
 const EURO = value => currency(value, { symbol: '€', decimal: ',', separator: '.' });
 export default {
-  inject: ['accessToken'],
+  inject: ['toaster'],
   data() {
     return {
       appURL: this.$params.backUrl,
@@ -98,13 +98,20 @@ export default {
         method: 'GET',
         headers: {
           "Content-Type": "text/plain;charset=utf-8",
-          "Authorization": "Bearer " + this.accessToken,
         }
       };
       this.loadingReport = true;
       fetch(this.appURL + "?q=salesreport&startDate=" +this.salesReportStart+ '&endDate='+this.salesReportEnd+ '&save='+this.saveReport, requestOptions)
-      .then(response => response.json())
-      .then(data => {
+      .then(async response => {
+        
+
+        if (!response.ok) {
+          // get error message from body or default to response status
+          const error = response.status;
+          return Promise.reject(error);
+        }
+
+        const data = await response.json()
         this.salesReport = data.data;
         this.salesReport = Object.keys(data.data).sort().reduce(
           (obj, key) => {
@@ -114,6 +121,12 @@ export default {
           {}
         );
         this.loadingReport = false;
+      })
+      .catch(error => {
+        this.loadingReport = false;
+        this.errorMessage = error;
+        this.toaster.add('Erreur', "Il semble qu'une erreur ait eu lieu lors de la récupération des rapports", '#dc3545');
+        console.error('There was an error!', error);
       });
     },
     totalOfSales(sales, formatted = false) {
