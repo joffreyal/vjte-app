@@ -18,8 +18,6 @@ export default {
             const response = await fetch('https://www.googleapis.com/oauth2/v4/token', opt)
             const data = await response.json()
             token.access_token = data.access_token
-            console.log(Date.now())
-            console.log(data.expires_in)
             token.expiry_date = Date.now() + (data.expires_in * 1000)
             window.ipcRenderer.invoke('setStoreValue', ['token', token])
             return await token

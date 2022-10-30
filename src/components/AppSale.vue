@@ -107,7 +107,7 @@
       </div>
       <div class="col">
         <div class="input-group col">
-          <input v-model="payment.amount" class="form-control" type="number" step="0.01" min="0" placeholder="montant">
+          <input v-model="payment.amount" class="form-control" type="number" step="0.01" placeholder="montant">
           <span class="input-group-text">€</span>
         </div>
         <div v-if="!payment.validation.amount" class="text-danger">

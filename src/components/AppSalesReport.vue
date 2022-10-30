@@ -16,11 +16,11 @@
     <div class="row d-flex align-items-center">
       <div class="input-group col m-1">
         <span class="input-group-text">De</span>
-        <input v-model="salesReportStart" type="date" class="form-control">
+        <input v-model="salesReportStart" type="date" class="form-control" :max="maxDate">
       </div>
       <div class="input-group col m-1">
         <span class="input-group-text">A</span>
-        <input v-model="salesReportEnd" type="date" class="form-control">
+        <input v-model="salesReportEnd" type="date" class="form-control" :max="maxDate">
       </div>
       <div class="col-auto m-1">
         <button class="btn btn-primary" @click="getSalesReport()">
@@ -86,6 +86,7 @@ export default {
       appURL: this.$params.backUrl,
       salesReportStart: '',
       salesReportEnd: '',
+      maxDate: '',
       salesReport: [],
       loadingReport: false,
       saveReport: false
@@ -142,6 +143,16 @@ export default {
     removeSpace(string) {
       return string.replace(/\s+/g, '');
     }
+  },
+  mounted() {
+    var date = new Date();
+    var startDate = new Date();
+    startDate.setDate(1);
+    var dateString = new Date(date.getTime() - (date.getTimezoneOffset() * 60000 )).toISOString();
+    var startDateString = new Date(startDate.getTime() - (startDate.getTimezoneOffset() * 60000 )).toISOString();
+    this.salesReportEnd = dateString.substring(0, 10);
+    this.maxDate = dateString.substring(0, 10);
+    this.salesReportStart = startDateString.substring(0, 10);
   }
 }
 </script>
