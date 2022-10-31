@@ -30,9 +30,17 @@
       </div>
       <div class="col m-1">
         <div class="form-check">
-          <input class="form-check-input" v-model="saveReport" type="checkbox" value="" id="flexCheckDefault">
+          <input class="form-check-input" v-model="saveReport" type="checkbox" value="" id="flexCheckDefault" @change="!saveReport ? sendAllMail = false : ''">
           <label class="form-check-label" for="flexCheckDefault">
             sauvegarder en pdf
+          </label>
+        </div>
+      </div>
+      <div v-if="saveReport" class="col m-1">
+        <div class="form-check">
+          <input class="form-check-input" v-model="sendAllMail" type="checkbox" value="" id="flexCheckDefault2">
+          <label class="form-check-label" for="flexCheckDefault2">
+            envoyer les pdf par mail
           </label>
         </div>
       </div>
@@ -40,8 +48,14 @@
     <div class="row">
       <div v-for='(creator, index) in salesReport' class="card" :key="removeSpace(index)+'sales'">
         <div class="card-body">
-          <button class="btn btn-light" type="button" data-bs-toggle="collapse" :data-bs-target="'#saleTable'+removeSpace(index)">{{index}}</button>
-          <a v-if="creator.reportUrl" :href="creator.reportUrl" target="_blank">rapport PDF</a>
+          <button class="btn btn-light me-1" type="button" data-bs-toggle="collapse" :data-bs-target="'#saleTable'+removeSpace(index)">{{index}}</button>
+          <a v-if="creator.reportFile" class="me-1" :href="creator.reportFile.reportUrl" target="_blank">rapport PDF</a>
+          <button v-if="creator.reportFile" class="btn me-1" :class="creator.reportFile.emailSend===true ? 'btn-outline-success' : 'btn-outline-info'" type="button" @click="sendSaleReport(index, creator.reportFile)" :disabled="creator.reportFile.emailSend">
+            <span v-if="creator.reportFile.emailSend==='sending'" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            <i v-if="creator.reportFile.emailSend===true" class="bi bi-check text-success"></i>
+            {{creator.reportFile.emailSend===true ? 'mail envoyé' : 'envoyer par mail'}}
+            
+          </button>
           <div class="collapse" :id="'saleTable'+removeSpace(index)">
             <table class="table">
               <thead class="table-light">
@@ -89,7 +103,8 @@ export default {
       maxDate: '',
       salesReport: [],
       loadingReport: false,
-      saveReport: false
+      saveReport: false,
+      sendAllMail: false
     }
   },
   methods: {
@@ -102,7 +117,7 @@ export default {
         }
       };
       this.loadingReport = true;
-      fetch(this.appURL + "?q=salesreport&startDate=" +this.salesReportStart+ '&endDate='+this.salesReportEnd+ '&save='+this.saveReport, requestOptions)
+      fetch(this.appURL + "?q=salesreport&startDate=" +this.salesReportStart+ '&endDate='+this.salesReportEnd+ '&save='+this.saveReport+ '&sendMail='+this.sendAllMail, requestOptions)
       .then(async response => {
         
 
@@ -121,6 +136,16 @@ export default {
           },
           {}
         );
+        
+        Object.entries(this.salesReport).forEach(([key, creatorReport]) => {
+          if (creatorReport.reportFile) {
+            this.salesReport[key].reportFile.emailSend = false;
+            if (this.sendAllMail) {
+              this.salesReport[key].reportFile.emailSend = true;
+            }
+          }
+        })
+        
         this.loadingReport = false;
       })
       .catch(error => {
@@ -128,6 +153,33 @@ export default {
         this.errorMessage = error;
         this.toaster.add('Erreur', "Il semble qu'une erreur ait eu lieu lors de la récupération des rapports", '#dc3545');
         console.error('There was an error!', error);
+      });
+    },
+    sendSaleReport(creator, reportFile) {
+      const requestOptions = {
+        redirect: "follow",
+        method: 'GET',
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8",
+        }
+      };
+      reportFile.emailSend = 'sending';
+      fetch(this.appURL + "?q=sendsalesreport&creator=" +encodeURI(creator)+ '&fileid='+reportFile.driveId, requestOptions)
+      .then(async response => {
+        
+        if (!response.ok) {
+          // get error message from body or default to response status
+          const error = response.status;
+          return Promise.reject(error);
+        }
+        reportFile.emailSend = true;
+      })
+      .catch(error => {
+        this.loadingReport = false;
+        this.errorMessage = error;
+        this.toaster.add('Erreur', "Il semble qu'une erreur ait eu lieu lors de l'envoie du mail", '#dc3545');
+        console.error('There was an error!', error);
+        reportFile.emailSend = 'error';
       });
     },
     totalOfSales(sales, formatted = false) {

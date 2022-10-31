@@ -120,15 +120,20 @@ function connectGoogle() {
       "https://www.googleapis.com/auth/drive",
       "https://www.googleapis.com/auth/drive.readonly",
       "https://www.googleapis.com/auth/script.external_request",
-      "https://www.googleapis.com/auth/spreadsheets"
+      "https://www.googleapis.com/auth/spreadsheets",
+      "https://www.googleapis.com/auth/script.send_mail"
     ],
     { successRedirectURL: 'https://sites.google.com/view/vjte-success-connection/accueil' }
   );
   
+  if (hasVersionChange()) {
+    reConnectGoogle();
+    return;
+  }
+
   const tokenObj = store.get('token')
   if(tokenObj.refresh_token) {
     myApiOauth.setTokens({ refresh_token: tokenObj.refresh_token });
-    myApiOauth.on('')
   } else {
     myApiOauth.openAuthWindowAndGetTokens()
       .then(token => {
@@ -140,4 +145,15 @@ function connectGoogle() {
 function reConnectGoogle() {
   store.set('token', '')
   connectGoogle()
+}
+
+function hasVersionChange() {
+  let lastKnownVersion = store.get('lastKnownVersion')
+  let actualVersion = app.getVersion();
+
+  if(lastKnownVersion !== actualVersion) {
+    store.set('lastKnownVersion', actualVersion)
+    return true;
+  }
+  return false;
 }

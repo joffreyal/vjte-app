@@ -5,7 +5,7 @@
       Il est fortement conseillé de garder un cahier de compte sous la main en cas de bug.
     </p>
   </div>
-  <div class="row row-cols-2 row-cols-md-4 g-4 m-5">
+  <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-4 m-5">
     <div class="col">
       <div class="card h-100">
         <div class="card-header text-center">
